@@ -11,46 +11,24 @@ def printPhotoFromFilename(file_name):
     VERTRES = 10
 
     file_name = path_to_watch + "\\" + file_name
-    #
-    # LOGPIXELS = dots per inch
-    #
+
     LOGPIXELSX = 88
     LOGPIXELSY = 90
-    #
-    # PHYSICALWIDTH/HEIGHT = total area
-    #
+
     PHYSICALWIDTH = 110
     PHYSICALHEIGHT = 111
-    #
-    # PHYSICALOFFSETX/Y = left / top margin
-    #
+
     PHYSICALOFFSETX = 0
     PHYSICALOFFSETY = 0
 
     printer_name = win32print.GetDefaultPrinter ()
 
-
-    #
-    # You can only write a Device-independent bitmap
-    #  directly to a Windows device context; therefore
-    #  we need (for ease) to use the Python Imaging
-    #  Library to manipulate the image.
-    #
-    # Create a device context from a named printer
-    #  and assess the printable size of the paper.
-    #
     hDC = win32ui.CreateDC ()
     hDC.CreatePrinterDC (printer_name)
     printable_area = hDC.GetDeviceCaps (HORZRES), hDC.GetDeviceCaps (VERTRES)
     printer_size = hDC.GetDeviceCaps (PHYSICALWIDTH), hDC.GetDeviceCaps (PHYSICALHEIGHT)
     printer_margins = hDC.GetDeviceCaps (PHYSICALOFFSETX), hDC.GetDeviceCaps (PHYSICALOFFSETY)
 
-    #
-    # Open the image, rotate it if it's wider than
-    #  it is high, and work out how much to multiply
-    #  each pixel by to get it as big as possible on
-    #  the page without distorting.
-    #
     bmp = Image.open (file_name)
     if bmp.size[0] > bmp.size[1]:
       bmp = bmp.rotate (0)
@@ -62,10 +40,6 @@ def printPhotoFromFilename(file_name):
     print(ratios)
     scale = min (ratios)
 
-    #
-    # Start the print job, and draw the bitmap to
-    #  the printer device at the scaled size.
-    #
     hDC.StartDoc (file_name)
     hDC.StartPage ()
 
@@ -82,7 +56,7 @@ def printPhotoFromFilename(file_name):
     hDC.DeleteDC ()
 
 before = dict ([(f, None) for f in os.listdir(path_to_watch)])
-czaszdjecia = int(time.time()-100)
+photo_time = int(time.time()-100)
 print(before)
 
 while True:
@@ -90,8 +64,8 @@ while True:
     after = dict ([(f, None) for f in os.listdir(path_to_watch)])
     added = [f for f in after if not f in before]
     if added:
-        if time.time()-czaszdjecia > 60:
-            czaszdjecia = time.time()
+        if time.time()-photo_time > 60:
+            photo_time = time.time()
             print(" drukuje " + str(added[0]))
             printPhotoFromFilename(str(added[0]))
     before = after
